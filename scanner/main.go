@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"net"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,6 +17,33 @@ import (
 
 var logFile = os.Stdout
 var errFile = os.Stderr
+var hostname string
+var err error
+var ip string
+
+func init() {
+	hostname, err = os.Hostname()
+	if err != nil {
+		fmt.Fprintf(errFile, "WARNING: Could not get hostname.")
+	}
+}
+
+// GetLocalIP returns the non loopback local IP of the host
+func GetLocalIP() string {
+    addrs, err := net.InterfaceAddrs()
+    if err != nil {
+        return ""
+    }
+    for _, address := range addrs {
+        // check the address type and if it is not a loopback the display it
+        if ipnet, ok := address.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+            if ipnet.IP.To4() != nil {
+                return ipnet.IP.String()
+            }
+        }
+    }
+    return ""
+}
 
 func handleJar(path string, ra io.ReaderAt, sz int64) {
 	if verbose {
@@ -105,6 +133,7 @@ var vulns filter.Vulnerabilities
 var ignoreVulns filter.Vulnerabilities = filter.CVE_2021_45046 | filter.CVE_2021_44832
 var ignoreV1 bool
 var network bool
+var uniqLogFileName bool
 
 func main() {
 	flag.Var(&excludes, "exclude", "paths to exclude (can be used multiple times)")
@@ -114,6 +143,7 @@ func main() {
 	flag.BoolVar(&ignoreV1, "ignore-v1", false, "ignore log4j 1.x versions")
 	flag.Var(&ignoreVulns, "ignore-vulns", "ignore vulnerabilities")
 	flag.BoolVar(&network, "scan-network", false, "search network filesystems")
+	flag.BoolVar(&uniqLogFileName, "uniqlogname", true, "auto generate a uniq name for the logfile")
 
 	flag.Parse()
 
@@ -131,6 +161,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	if uniqLogFileName {
+		ip = GetLocalIP()
+		logFileName = fmt.Sprintf("%s-%s_log4j-vuln-scanner.log", ip, hostname)
+	}
 	if logFileName != "" {
 		f, err := os.Create(logFileName)
 		if err != nil {
