@@ -38,6 +38,7 @@ $ ./local-log4j-vuln-scanner [--verbose] [--quiet] \
     [--exclude /path/to/exclude …] \
 	[--scan-network] \
 	[--log /path/to/file.log] \
+	[--uniqlogname] \
     /path/to/app1 /path/to/app2 …
 ```
 
@@ -57,6 +58,11 @@ The `--log` flag allows everythig to be written to a log file instead of stdout/
 Use the `--exclude` flag to exclude subdirectories from being scanned. Can be used multiple times.
 
 The `--scan-network` flag tells the scanner to search network filesystems (disabled by default). This has not been implemented for Windows.
+
+The `--uniqlogname` flag tells the scanner to generate a host uniq log file name in the format `$IP-$HOSTNAME_log4j-scanner.log`
+This option includes `--log`
+`$IP` will be the local IP address, non loopback.
+`$HOSTNAME` will be the configured hostname.
 
 If class files indicating one of the vulnerabilities are found,
 messages like the following are printed to standard output:
