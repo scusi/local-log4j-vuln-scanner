@@ -39,6 +39,7 @@ $ ./local-log4j-vuln-scanner [--verbose] [--quiet] \
 	[--scan-network] \
 	[--log /path/to/file.log] \
 	[--uniqlogname] \
+	[--uploadURL http://server:88/upload] \
     /path/to/app1 /path/to/app2 …
 ```
 
@@ -63,6 +64,9 @@ The `--uniqlogname` flag tells the scanner to generate a host uniq log file name
 This option includes `--log`
 `$IP` will be the local IP address, non loopback.
 `$HOSTNAME` will be the configured hostname.
+
+The `--uploadURL` flag tells the scanner to upload the logfile to the given URL.
+This option implies `--uniqlogname`.
 
 If class files indicating one of the vulnerabilities are found,
 messages like the following are printed to standard output:
@@ -105,3 +109,8 @@ GNU General Public License, version 3
 # Author
 
 Hilko Bengen <<bengen@hilluzination.de>>
+
+the following feature where added by Florian Walther <<flw@scu.si>>:
+- uploading logfiles to a central server
+- time meassure for scanning
+- auto generated logfile name, to have hostname and ip in the log file name
