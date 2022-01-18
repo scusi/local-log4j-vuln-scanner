@@ -8,9 +8,12 @@ import (
 	"net"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
+	"mime/multipart"
 
 	"github.com/hillu/local-log4j-vuln-scanner/filter"
 )
@@ -20,12 +23,15 @@ var errFile = os.Stderr
 var hostname string
 var err error
 var ip string
+var startTime time.Time
+var endTime time.Time
 
 func init() {
 	hostname, err = os.Hostname()
 	if err != nil {
 		fmt.Fprintf(errFile, "WARNING: Could not get hostname.")
 	}
+	startTime = time.Now()
 }
 
 // GetLocalIP returns the non loopback local IP of the host
@@ -43,6 +49,40 @@ func GetLocalIP() string {
         }
     }
     return ""
+}
+
+// upload file to upload the log to a central server
+func upload(filename string) (err error) {
+	if filename == "" {
+		err = fmt.Errorf("no filename give for upload")
+		return err
+	}
+	file, err := os.Open(filename)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+	
+	body := &bytes.Buffer{}
+  	writer := multipart.NewWriter(body)
+  	part, _ := writer.CreateFormFile("file", filepath.Base(file.Name()))
+  	io.Copy(part, file)
+  	writer.Close()
+
+  	r, _ := http.NewRequest("POST", uploadURL, body)
+  	r.Header.Add("Content-Type", writer.FormDataContentType())
+  	client := &http.Client{}
+  	res, err := client.Do(r)
+	/*
+	res, err := http.Post(uploadURL, "binary/octet-stream", file)
+	if err != nil {
+		return err
+	}
+	*/
+	defer res.Body.Close()
+	message, _ := ioutil.ReadAll(res.Body)
+	fmt.Printf(string(message))
+	return
 }
 
 func handleJar(path string, ra io.ReaderAt, sz int64) {
@@ -134,6 +174,7 @@ var ignoreVulns filter.Vulnerabilities = filter.CVE_2021_45046 | filter.CVE_2021
 var ignoreV1 bool
 var network bool
 var uniqLogFileName bool
+var uploadURL string
 
 func main() {
 	flag.Var(&excludes, "exclude", "paths to exclude (can be used multiple times)")
@@ -144,6 +185,7 @@ func main() {
 	flag.Var(&ignoreVulns, "ignore-vulns", "ignore vulnerabilities")
 	flag.BoolVar(&network, "scan-network", false, "search network filesystems")
 	flag.BoolVar(&uniqLogFileName, "uniqlogname", true, "auto generate a uniq name for the logfile")
+	flag.StringVar(&uploadURL, "uploadURL", "", "URL to upload log file to")
 
 	flag.Parse()
 
@@ -161,6 +203,10 @@ func main() {
 		os.Exit(1)
 	}
 
+	// if an uploadURL is given, uniqueLogFileName will be set to `true`.
+	if uploadURL != "" {
+		uniqLogFileName = true
+	}
 	if uniqLogFileName {
 		ip = GetLocalIP()
 		logFileName = fmt.Sprintf("%s-%s_log4j-vuln-scanner.log", ip, hostname)
@@ -176,6 +222,7 @@ func main() {
 		defer f.Close()
 	}
 
+	fmt.Fprintf(logFile, "StartTime of scan: %s\n", startTime)
 	fmt.Fprintf(logFile, "Checking for vulnerabilities: %s\n", vulns)
 
 	for _, root := range flag.Args() {
@@ -229,8 +276,14 @@ func main() {
 			return nil
 		})
 	}
-
+	endTime = time.Now()
+	fmt.Fprintf(logFile, "EndTime of scan: %s\n", endTime)
+	fmt.Fprintf(logFile, "scanning of %s (%s) took %s\n", hostname, ip, endTime.Sub(startTime))
 	if !quiet {
 		fmt.Println("\nScan finished")
+	}
+	err := upload(logFileName)
+	if err != nil {
+		fmt.Println("\nError while uploading logfile")
 	}
 }
