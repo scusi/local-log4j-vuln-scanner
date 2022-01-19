@@ -99,6 +99,7 @@ Run the following commands in the checked-out repository:
 ```
 go build -o local-log4j-vuln-scanner ./scanner
 go build -o local-log4j-vuln-patcher ./patcher
+go build -o local-log4j-vuln-server ./server
 ```
 (Add the appropriate `.exe` extension on Windows systems, of course.)
 
