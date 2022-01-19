@@ -209,7 +209,8 @@ func main() {
 	}
 	if uniqLogFileName {
 		ip = GetLocalIP()
-		logFileName = fmt.Sprintf("%s-%s_log4j-vuln-scanner.log", ip, hostname)
+		ts := startTime.Format("20060102_150405")
+		logFileName = fmt.Sprintf("%s-%s_%s_log4j-vuln-scanner.log", ip, hostname, ts)
 	}
 	if logFileName != "" {
 		f, err := os.Create(logFileName)
