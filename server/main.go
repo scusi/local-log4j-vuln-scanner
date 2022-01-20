@@ -13,8 +13,8 @@ import (
 )
 
 // supported command line flags
-var addr = flag.String("addr", "127.0.0.1:8123", "http service address")
-var uploadDir = flag.String("uploadDir", "./", "directory to upload files to")
+var addr = flag.String("addr", ":8080", "http service address")
+var uploadDir = flag.String("uploadDir", "./data", "directory to upload files to")
 var templateDir = flag.String("templateDir", "", "directory with templates, relative to working directory")
 var assetDir = flag.Bool("showAssets", true, "if set to 'true' uploadDir will be browsable unter '/files/'")
 var sslOn = flag.Bool("sslOn", false, "if set to 'true' HTTPS is turned on.")
