@@ -138,8 +138,15 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			// TODO: Insert check if the file already exists
-			//       If it exists save a new version
+			// Insert check if the file already exists
+			// If it exists do not allow to overwrite it!
+			if _, err := os.Stat(filepath.Join(*uploadDir, part.FileName())); err == nil {
+  				// file to be uploaded already exists
+				err = fmt.Errorf("file '%s' already exists, upload not allowed", filepath.Join(*uploadDir, part.FileName()))
+				log.Prinln(err.Error())
+				http.Error(w, err.Error(), http.StatusForbidden)
+				return
+			} 
 			
 			// write the uploaded file to the given upload directory
 			dst, err := os.Create(filepath.Join(*uploadDir, part.FileName()))
