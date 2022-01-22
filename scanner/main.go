@@ -25,6 +25,7 @@ var err error
 var ip string
 var startTime time.Time
 var endTime time.Time
+var debug bool
 
 func init() {
 	hostname, err = os.Hostname()
@@ -80,8 +81,11 @@ func upload(filename string) (err error) {
 	}
 	*/
 	defer res.Body.Close()
-	message, _ := ioutil.ReadAll(res.Body)
-	fmt.Printf(string(message))
+	if debug {
+		fmt.Printf("Response StatusCode: %d\n", res.StatusCode)
+		message, _ := ioutil.ReadAll(res.Body)
+		fmt.Printf(string(message))
+	}
 	return
 }
 
@@ -177,6 +181,7 @@ var uniqLogFileName bool
 var uploadURL string
 
 func main() {
+	flag.BoolVar(&debug, "debug", false, "prints debug info if set to 'true'")
 	flag.Var(&excludes, "exclude", "paths to exclude (can be used multiple times)")
 	flag.BoolVar(&verbose, "verbose", false, "log every archive file considered")
 	flag.StringVar(&logFileName, "log", "", "log file to write output to")
@@ -286,5 +291,9 @@ func main() {
 	err := upload(logFileName)
 	if err != nil {
 		fmt.Println("\nError while uploading logfile")
+	} else {
+		if !quiet {
+			fmt.Printf("scanlog uploaded sucessfully to: %s\n", uploadURL)
+		}
 	}
 }
