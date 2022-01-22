@@ -6,6 +6,7 @@ import (
 	"html/template"
 	"io"
 	"log"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -143,7 +144,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 			if _, err := os.Stat(filepath.Join(*uploadDir, part.FileName())); err == nil {
   				// file to be uploaded already exists
 				err = fmt.Errorf("file '%s' already exists, upload not allowed", filepath.Join(*uploadDir, part.FileName()))
-				log.Prinln(err.Error())
+				log.Println(err.Error())
 				http.Error(w, err.Error(), http.StatusForbidden)
 				return
 			} 
