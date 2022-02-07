@@ -27,6 +27,9 @@ var ip string
 var startTime time.Time
 var endTime time.Time
 var debug bool
+var version = "v0.0.0"
+var branch = "dev"
+var commit = "dev"
 
 func init() {
 	hostname, err = os.Hostname()
@@ -34,6 +37,10 @@ func init() {
 		fmt.Fprintf(errFile, "WARNING: Could not get hostname.")
 	}
 	startTime = time.Now()
+}
+
+func showVersion {
+	fmt.Printf("Version: %s, branch: %s, commit: %s\n", version. branch, commit)
 }
 
 // GetLocalIP returns the non loopback local IP of the host
@@ -184,8 +191,10 @@ var ignoreV1 bool
 var network bool
 var uniqLogFileName bool
 var uploadURL string
+var showVersion bool
 
 func main() {
+	flag.BoolVar(&showVersion, "version", false, "prints version info")
 	flag.BoolVar(&debug, "debug", false, "prints debug info if set to 'true'")
 	flag.Var(&excludes, "exclude", "paths to exclude (can be used multiple times)")
 	flag.BoolVar(&verbose, "verbose", false, "log every archive file considered")
@@ -198,7 +207,10 @@ func main() {
 	flag.StringVar(&uploadURL, "uploadURL", "", "URL to upload log file to")
 
 	flag.Parse()
-
+	if showVersion {
+		showVersion()
+		os.exit(0)
+	}
 	if len(flag.Args()) <= 1 {
 		err = fmt.Errorf("No Path to scan! Please add at least one path to scan.")
 		log.Fatal(err)
