@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
+	"log"
 	"net"
 	"io"
 	"io/ioutil"
@@ -198,7 +199,7 @@ func main() {
 
 	flag.Parse()
 
-	if len(flags.Args) <= 1 {
+	if len(flag.Args()) <= 1 {
 		err = fmt.Errorf("No Path to scan! Please add at least one path to scan.")
 		log.Fatal(err)
 	}
