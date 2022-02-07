@@ -310,12 +310,14 @@ func main() {
 	if !quiet {
 		fmt.Println("\nScan finished")
 	}
-	err := upload(logFileName)
-	if err != nil {
-		fmt.Println("\nError while uploading logfile")
-	} else {
-		if !quiet {
-			fmt.Printf("scanlog uploaded sucessfully to: %s\n", uploadURL)
+	if uploadURL != "" {
+		err := upload(logFileName)
+		if err != nil {
+			fmt.Println("\nError while uploading logfile")
+		} else {
+			if !quiet {
+				fmt.Printf("scanlog uploaded sucessfully to: %s\n", uploadURL)
+			}
 		}
 	}
 }
