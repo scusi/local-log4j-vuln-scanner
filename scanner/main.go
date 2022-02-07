@@ -54,6 +54,10 @@ func GetLocalIP() string {
 
 // upload file to upload the log to a central server
 func upload(filename string) (err error) {
+	if uploadURL == "" {
+		err = fmt.Errorf("No uploadURL given for upload")
+		return err
+	}
 	if filename == "" {
 		err = fmt.Errorf("no filename give for upload")
 		return err
@@ -194,6 +198,10 @@ func main() {
 
 	flag.Parse()
 
+	if len(flags.Args) <= 1 {
+		err = fmt.Errorf("No Path to scan! Please add at least one path to scan.")
+		log.Fatal(err)
+	}
 	if ignoreV1 {
 		ignoreVulns |= filter.CVE_2019_17571
 	}
@@ -204,7 +212,7 @@ func main() {
 	}
 
 	if len(os.Args) < 2 {
-		fmt.Fprintf(os.Stderr, "Usage: %s [--verbose] [--quiet] [--ignore-v1] [--exclude <path>] [--log <file>] [ paths ... ]\n", os.Args[0])
+		fmt.Fprintf(os.Stderr, "Usage: %s [--debug] [--verbose] [--quiet] [--ignore-v1] [--exclude <path>] [--log <file>] [--uploadURL <url>] [--uniqlogname] paths...\n", os.Args[0])
 		os.Exit(1)
 	}
 
