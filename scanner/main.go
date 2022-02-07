@@ -39,8 +39,9 @@ func init() {
 	startTime = time.Now()
 }
 
-func showVersion {
-	fmt.Printf("Version: %s, branch: %s, commit: %s\n", version. branch, commit)
+func showVersionInfo() {
+	fmt.Printf("Version: %s, branch: %s, commit: %s\n", version, branch, commit)
+	os.Exit(0)
 }
 
 // GetLocalIP returns the non loopback local IP of the host
@@ -208,10 +209,10 @@ func main() {
 
 	flag.Parse()
 	if showVersion {
-		showVersion()
-		os.exit(0)
+		showVersionInfo()
+		os.Exit(0)
 	}
-	if len(flag.Args()) <= 1 {
+	if len(flag.Args()) < 1 {
 		err = fmt.Errorf("No Path to scan! Please add at least one path to scan.")
 		log.Fatal(err)
 	}
