@@ -56,6 +56,9 @@ $ ./local-log4j-vuln-scanner [-version] [-verbose] [-quiet] \
     /path/to/app1 /path/to/app2 …
 ```
 The `-version`flag will show version information and exit.
+```
+Version: 0.13.3, branch: master, commit: 843c6f0260c2cd9c9762877ed1f6aff00265cf5c
+```
 
 The `-verbose` flag will show every .jar and .war file checked, even if no problem is found.
 
