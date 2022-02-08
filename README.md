@@ -113,12 +113,14 @@ Install [goreleaser](https://goreleaser.com/)
 
 and execute `goreleaser build` from the source directory.
 
-A `.goreleaser.yml` config file for [goreleaser](https://goreleaser.com/) is included in the repository.
+A [.goreleaser.yml](.goreleaser) config file for [goreleaser](https://goreleaser.com/) is included in the repository.
 
 ## manual building
 Install a [Go compiler](https://golang.org/dl).
 
-Run the following commands in the checked-out repository:
+Run the following commands in the checked-out repository.
+You also have to replace {{.Version}}, {{.Branch}} and {{.Commit}} with the approriate values, like `v0.0.1`, `master`, `02c0febabe`.
+
 ```
 go build -ldflags="-s -w -X main.version={{.Version}} -X main.branch={{.Branch}} -X main.commit={{.Commit}}" -o local-log4j-vuln-scanner ./scanner
 go build -ldflags="-s -w -X main.version={{.Version}} -X main.branch={{.Branch}} -X main.commit={{.Commit}}" -o local-log4j-vuln-patcher ./patcher
