@@ -116,7 +116,7 @@ Install [goreleaser](https://goreleaser.com/)
 
 and execute `goreleaser build` from the source directory.
 
-A [.goreleaser.yml](.goreleaser) config file for [goreleaser](https://goreleaser.com/) is included in the repository.
+A [.goreleaser.yaml](.goreleaser) config file for [goreleaser](https://goreleaser.com/) is included in the repository.
 
 ## manual building
 Install a [Go compiler](https://golang.org/dl).
